@@ -1,0 +1,2 @@
+<!--pages/zfb/zfb.wxml-->
+<text>{{name}}</text>

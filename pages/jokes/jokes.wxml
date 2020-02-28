@@ -1,0 +1,4 @@
+<!--pages/jokes/jokes.wxml-->
+
+<text >每日一笑\n</text>
+<text wx:for='{{jokes}}' wx:key='key'>\n{{index+1}}.{{item.content}}\n</text>

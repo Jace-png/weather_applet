@@ -1,0 +1,16 @@
+<view class="page">
+    <view class="page__hd">
+          <view class="page__desc">D</view>
+    </view>
+    <view class="page__bd">
+        <view class="weui-grids">
+            <block wx:for="{{grids}}" wx:key="*this">
+                <navigator url="pages/index/index" class="weui-grid" hover-class="weui-grid_active" data-index="{{index}}" bindtap="pageskip" open-type="switchTab">
+                    <image class="weui-grid__icon" src="/images/221508-1560521708e6ff.jpg" />
+                    <view class="weui-grid__label">{{item.app.name}}</view>
+                    <!-- <view class="weui-grid__label">{{item.app.pub_date}}</view> -->
+                </navigator>
+            </block>
+        </view>
+    </view>
+</view>
