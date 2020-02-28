@@ -1,0 +1,15 @@
+publish:
+  - app:
+      name: 微信
+      pub_date: 20150101
+  - app:
+      name: QQ
+      pub_date: 20100215
+  - app:
+      name: 支付宝
+      pub_date: 20150101
+  - app:
+      name: 每日一笑
+      pub_date: 20150101
+develope:
+  -app: xxx
