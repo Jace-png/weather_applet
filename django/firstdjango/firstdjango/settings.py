@@ -76,12 +76,31 @@ WSGI_APPLICATION = 'firstdjango.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',  # 数据库驱动
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     },
+#     'django_sql':{
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'django_sql',
+#         'USER': 'root',
+#         'PASSWORD': 'jace666',
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#     }
+#  }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # 数据库驱动
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_sql',
+        'USER': 'root',
+        'PASSWORD': 'jace666',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    },
+ }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -108,8 +127,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # 英文变中文
 LANGUAGE_CODE = 'zh-hans'
 
-# TIME_ZONE = 'UTC'
-TIME_ZONE = 'Asia/Shanghai'
+TIME_ZONE = 'UTC'
+# TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
