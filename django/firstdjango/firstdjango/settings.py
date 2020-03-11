@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app1.apps.App1Config',
     'juhe.apps.JuheConfig',
+    'api.apps.ApiConfig',
 
 ]
 
@@ -99,8 +100,7 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '3306',
     },
- }
-
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -127,8 +127,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # 英文变中文
 LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
-# TIME_ZONE = 'Asia/Shanghai'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -142,8 +142,75 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static').replace('\\','/'),
+    os.path.join(BASE_DIR, 'static').replace('\\', '/'),
 )
-SRTATIC_URL_SELF = os.path.join(BASE_DIR, 'static/images/').replace('\\','/')
+SRTATIC_URL_SELF = os.path.join(BASE_DIR, 'static/images/').replace('\\', '/')
 
-SESSION_COOKIE_AGE = 60*20
+SESSION_COOKIE_AGE = 60 * 20
+# LOG_DIR = os.path.join(BASE_DIR, 'juhe/log')
+# if not os.path.exists(LOG_DIR):
+#     os.makedirs(LOG_DIR)
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': True,
+#     'formatters': {# 日志格式
+#        'standard': {
+#             'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(pathname)s:%(funcName)s:%(lineno)d] [%(levelname)s]- %(message)s'}
+#     },
+#     'filters': {# 过滤器
+#         'test':{
+#             '()': 'juhe.ops.TestFilter'
+#         }
+#     },
+#     # 处理器
+#     'handlers': {
+#         'null': {
+#             'level': 'DEBUG',
+#             'class': 'logging.NullHandler',
+#         },
+#         #文件处理器
+#         'file_handler': {# 记录到日志文件(需要创建对应的目录，否则会出错)
+#             'level':'DEBUG',
+#             'class':'logging.handlers.RotatingFileHandler',#循环文件处理,当文件到达一定大小时,自动将文件切为两份
+#             'filename': os.path.join(LOG_DIR,'service.log'),# 日志输出文件
+#             'maxBytes':1024*1024*5,#文件大小
+#             'backupCount': 5,#备份份数
+#             'formatter':'standard',#使用哪种formatters日志格式
+#                 'encoding': 'utf8',
+#         },
+#         # 终端处理器
+#         'console_handler':{
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'standard',
+#         },
+#     },
+#     'loggers': {# logging管理器
+#         'django': {
+#             'handlers': ['console_handler', 'file_handler'],
+#             'filters': ['test'],
+#             'level': 'DEBUG'
+#         }
+#     }
+# }
+
+CACHES = {
+    'default':{
+        # MemCache   基于缓存框架的缓存
+        # 'BACKEND':'django.core.cache.backends.memcached.MemcachedCache',
+        # 'LOCATION':'127.0.0.1:112211',
+
+
+        #DB cache 基于数据库的缓存
+        # 'BACKEND':'django.core.cache.backends.db.DatabaseCache'
+        # 'LOCATION':'my_cache_tble',
+
+        #Filesystem Cache  基于文件系统的缓存
+        # 'BACKEND':'django.core.cache.backends.filebased.FileBasedCache',
+        # 'LOCATION':'filepath',
+
+        # Local Mem Cache   #基于内存的缓存
+        'BACKEND':'django.core.cache.backends.locmem.LocMemCache',
+        "LOCATION":'backend-cache'
+    }
+}
