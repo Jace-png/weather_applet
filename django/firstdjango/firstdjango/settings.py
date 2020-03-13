@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'app1.apps.App1Config',
     'juhe.apps.JuheConfig',
     'api.apps.ApiConfig',
-
+    # 第三方定时任务应用
+    # 'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -48,9 +49,11 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
+    'juhe.ops.middleware_demo.TestMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'firstdjango.urls'
@@ -84,9 +87,9 @@ WSGI_APPLICATION = 'firstdjango.wsgi.application'
 #     },
 #     'django_sql':{
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'django_sql',
-#         'USER': 'root',
-#         'PASSWORD': 'jace666',
+#         'NAME': 'databasename',
+#         'USER': 'username',
+#         'PASSWORD': 'password',
 #         'HOST': '127.0.0.1',
 #         'PORT': '3306',
 #     }
@@ -94,9 +97,9 @@ WSGI_APPLICATION = 'firstdjango.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django_sql',
-        'USER': 'root',
-        'PASSWORD': 'jace666',
+        'NAME': 'databasename',
+        'USER': 'username',
+        'PASSWORD': 'password',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     },
@@ -147,52 +150,52 @@ STATICFILES_DIRS = (
 SRTATIC_URL_SELF = os.path.join(BASE_DIR, 'static/images/').replace('\\', '/')
 
 SESSION_COOKIE_AGE = 60 * 20
-# LOG_DIR = os.path.join(BASE_DIR, 'juhe/log')
-# if not os.path.exists(LOG_DIR):
-#     os.makedirs(LOG_DIR)
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': True,
-#     'formatters': {# 日志格式
-#        'standard': {
-#             'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(pathname)s:%(funcName)s:%(lineno)d] [%(levelname)s]- %(message)s'}
-#     },
-#     'filters': {# 过滤器
-#         'test':{
-#             '()': 'juhe.ops.TestFilter'
-#         }
-#     },
-#     # 处理器
-#     'handlers': {
-#         'null': {
-#             'level': 'DEBUG',
-#             'class': 'logging.NullHandler',
-#         },
-#         #文件处理器
-#         'file_handler': {# 记录到日志文件(需要创建对应的目录，否则会出错)
-#             'level':'DEBUG',
-#             'class':'logging.handlers.RotatingFileHandler',#循环文件处理,当文件到达一定大小时,自动将文件切为两份
-#             'filename': os.path.join(LOG_DIR,'service.log'),# 日志输出文件
-#             'maxBytes':1024*1024*5,#文件大小
-#             'backupCount': 5,#备份份数
-#             'formatter':'standard',#使用哪种formatters日志格式
-#                 'encoding': 'utf8',
-#         },
-#         # 终端处理器
-#         'console_handler':{
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'standard',
-#         },
-#     },
-#     'loggers': {# logging管理器
-#         'django': {
-#             'handlers': ['console_handler', 'file_handler'],
-#             'filters': ['test'],
-#             'level': 'DEBUG'
-#         }
-#     }
-# }
+LOG_DIR = os.path.join(BASE_DIR, 'juhe/log')
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {# 日志格式
+       'standard': {
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(pathname)s:%(funcName)s:%(lineno)d] [%(levelname)s]- %(message)s'}
+    },
+    'filters': {# 过滤器
+        'test':{
+            '()': 'juhe.ops.TestFilter'
+        }
+    },
+    # 处理器
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        #文件处理器
+        'file_handler': {# 记录到日志文件(需要创建对应的目录，否则会出错)
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',#循环文件处理,当文件到达一定大小时,自动将文件切为两份
+            'filename': os.path.join(LOG_DIR,'service.log'),# 日志输出文件
+            'maxBytes':1024*1024*5,#文件大小
+            'backupCount': 5,#备份份数
+            'formatter':'standard',#使用哪种formatters日志格式
+                'encoding': 'utf8',
+        },
+        # 终端处理器
+        'console_handler':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {# logging管理器
+        'django': {
+            'handlers': ['console_handler', 'file_handler'],
+            'filters': ['test'],
+            'level': 'DEBUG'
+        }
+    }
+}
 
 CACHES = {
     'default':{
@@ -214,3 +217,21 @@ CACHES = {
         "LOCATION":'backend-cache'
     }
 }
+
+CRONJOBS = [
+    ('*/2 * * * *', 'cron.jobs.demo'), # cron.jobs.demo是一个函数dosomething
+    ('*/2 * * * *', 'echo "xxxxx"'),
+    ('*/3 * * * *', '/bin/ls')
+]
+# SMTP服务地址
+EMAIL_HOST = 'smtp.qq.com'
+#端口    SMTP不加密端口25,加密通道端口465
+EMAIL_POST = 25
+#发送邮件的邮箱
+EMAL_HOST_USER = 'emailname@qq.com'
+#在邮件中设置的客户端授权密码
+EMAIL_HOST_PASSWORD = '获取的授权码'
+# 是否开启TLS加密
+EMAIL_USE_TLS= True
+#收件人看到的发件人
+EMAIL_FROM = 'emailname@qq.com'
