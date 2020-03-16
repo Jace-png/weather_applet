@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'juhe.ops.middleware_demo.TestMiddleware',
+    'juhe.ops.middleware_demo.Statistics_Middleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -91,7 +92,7 @@ WSGI_APPLICATION = 'firstdjango.wsgi.application'
 #         'USER': 'username',
 #         'PASSWORD': 'password',
 #         'HOST': '127.0.0.1',
-#         'PORT': '3306',
+#         'PORT': 'port',
 #     }
 #  }
 DATABASES = {
@@ -101,7 +102,7 @@ DATABASES = {
         'USER': 'username',
         'PASSWORD': 'password',
         'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'PORT': 'port',
     },
 }
 
@@ -156,12 +157,16 @@ if not os.path.exists(LOG_DIR):
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
-    'formatters': {# 日志格式
-       'standard': {
-            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(pathname)s:%(funcName)s:%(lineno)d] [%(levelname)s]- %(message)s'}
+    'formatters': {  # 日志格式
+        'standard': {
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(pathname)s:%(funcName)s:%(lineno)d] [%(levelname)s]- %(message)s'},
+        'Access_statistics': {
+            'format': '%(message)s'
+        }
     },
-    'filters': {# 过滤器
-        'test':{
+
+    'filters': {  # 过滤器
+        'test': {
             '()': 'juhe.ops.TestFilter'
         }
     },
@@ -171,67 +176,81 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.NullHandler',
         },
-        #文件处理器
-        'file_handler': {# 记录到日志文件(需要创建对应的目录，否则会出错)
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',#循环文件处理,当文件到达一定大小时,自动将文件切为两份
-            'filename': os.path.join(LOG_DIR,'service.log'),# 日志输出文件
-            'maxBytes':1024*1024*5,#文件大小
-            'backupCount': 5,#备份份数
-            'formatter':'standard',#使用哪种formatters日志格式
-                'encoding': 'utf8',
+        # 文件处理器
+        'file_handler': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',  # 循环文件处理,当文件到达一定大小时,自动将文件切为两份
+            'filename': os.path.join(LOG_DIR, 'service.log'),  # 日志输出文件
+            'maxBytes': 1024 * 1024 * 10,  # 文件大小
+            'backupCount': 5,  # 备份份数
+            'formatter': 'standard',  # 使用哪种formatters日志格式
+            'encoding': 'utf8',
+        },
+        # 访问统计
+        'Access_statistics_handler': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',  # 循环文件处理,当文件到达一定大小时,自动将文件切为两份
+            'filename': os.path.join(LOG_DIR, 'Access_statistics.log'),  # 日志输出文件
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份份数
+            'formatter': 'Access_statistics',  # 使用哪种formatters日志格式
+            'encoding': 'utf-8',
         },
         # 终端处理器
-        'console_handler':{
+        'console_handler': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
         },
     },
-    'loggers': {# logging管理器
+    'loggers': {  # logging管理器
         'django': {
             'handlers': ['console_handler', 'file_handler'],
             'filters': ['test'],
+            'level': 'DEBUG'
+        },
+        'statistics': {
+            'handlers': ['Access_statistics_handler'],
             'level': 'DEBUG'
         }
     }
 }
 
 CACHES = {
-    'default':{
+    'default': {
         # MemCache   基于缓存框架的缓存
         # 'BACKEND':'django.core.cache.backends.memcached.MemcachedCache',
         # 'LOCATION':'127.0.0.1:112211',
 
-
-        #DB cache 基于数据库的缓存
+        # DB cache 基于数据库的缓存
         # 'BACKEND':'django.core.cache.backends.db.DatabaseCache'
         # 'LOCATION':'my_cache_tble',
 
-        #Filesystem Cache  基于文件系统的缓存
+        # Filesystem Cache  基于文件系统的缓存
         # 'BACKEND':'django.core.cache.backends.filebased.FileBasedCache',
         # 'LOCATION':'filepath',
 
         # Local Mem Cache   #基于内存的缓存
-        'BACKEND':'django.core.cache.backends.locmem.LocMemCache',
-        "LOCATION":'backend-cache'
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        "LOCATION": 'backend-cache'
     }
 }
 
 CRONJOBS = [
-    ('*/2 * * * *', 'cron.jobs.demo'), # cron.jobs.demo是一个函数dosomething
-    ('*/2 * * * *', 'echo "xxxxx"'),
-    ('*/3 * * * *', '/bin/ls')
+    ('*/2 * * * *', 'cron.jobs.demo'),  # cron.jobs.demo是一个函数dosomething
+    ('* /24 * * *','cron.jobs.analysis_cron')
+
 ]
+from juhe.static.wxappid import openid_secret
 # SMTP服务地址
 EMAIL_HOST = 'smtp.qq.com'
-#端口    SMTP不加密端口25,加密通道端口465
-EMAIL_POST = 25
-#发送邮件的邮箱
-EMAL_HOST_USER = 'emailname@qq.com'
-#在邮件中设置的客户端授权密码
-EMAIL_HOST_PASSWORD = '获取的授权码'
+# 端口    SMTP不加密端口25,加密通道端口465
+EMAIL_POST = 465
+# 发送邮件的邮箱
+EMAL_HOST_USER = openid_secret.Email
+# 在邮件中设置的客户端授权密码
+EMAIL_HOST_PASSWORD = openid_secret.EMAIL_HOST_PASSWORD
 # 是否开启TLS加密
-EMAIL_USE_TLS= True
-#收件人看到的发件人
-EMAIL_FROM = 'emailname@qq.com'
+EMAIL_USE_TLS = True
+# 收件人看到的发件人
+EMAIL_FROM = openid_secret.Email
